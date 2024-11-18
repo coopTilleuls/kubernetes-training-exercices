@@ -10,6 +10,7 @@ fi
 for TAG in ex-*; do
     (
     cd $TAG
-    docker build . -t $DOCKER_USER/k8s-training:$TAG --push
+    test -f Dockerfile \
+        && docker build . -t $DOCKER_USER/k8s-training:$TAG --push
     )
 done

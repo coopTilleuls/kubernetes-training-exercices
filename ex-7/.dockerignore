@@ -1,0 +1,8 @@
+*
+!bin/
+!config/
+!public/
+!src/
+!composer.*
+!symfony.lock
+!docker-entrypoint.sh

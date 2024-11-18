@@ -1,0 +1,25 @@
+apiVersion: apps/v1 # La version de l'API K8s utilisée
+kind: Deployment # Le type d'object décrit
+metadata: # Les noms et labels de notre object
+  name: k8s-training-deployment
+  labels:
+    app: k8s-training
+spec: # La définition du déploiement
+  replicas: 3 # Le nombre de pods souhaité (pour la scalabilité)
+  selector: # Comment doivent être matchés les pods à surveiller
+    matchLabels:
+      app: k8s-training
+  template: # Le template des objects Pod à créer
+    metadata:
+      labels:
+        app: k8s-training # Ici il faut que ça match avec le selector définit plus haut
+    spec:
+      containers:
+      - name: k8s-training
+        image: $DOCKER_USER/k8s-training:ex-3 # Le nom de notre image Docker !
+        env:
+          - name: APP_ENV
+            value: prod
+        ports:
+        - containerPort: 8000 # Le port du container à rendre accessible
+                              # ce port n'est PAS exposé sur le Node !!
