@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-training-config
 data:
   postgres-database: k8s-training
   postgres-fixtures.sql: |+
@@ -17,7 +20,3 @@ data:
 
   postgres-host: k8s-training-postgres-service
   postgres-username: postgres
-kind: ConfigMap
-metadata:
-  name: k8s-training-config
-  namespace: default
