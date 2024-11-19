@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  postgres-database: k8s-training
+  postgres-host: k8s-training-postgres-postgresql
+  postgres-username: postgres
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: k8s-training-config

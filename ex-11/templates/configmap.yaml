@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  postgres-database: {{ .Values.postgresql.global.postgresql.auth.database }}
+  postgres-host: {{ .Release.Name }}-postgresql
+  postgres-username: {{ .Values.postgresql.global.postgresql.auth.username }}
+  postgres-fixtures.sql: |+
+    CREATE TABLE IF NOT EXISTS stuff (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR NOT NULL
+    );
+
+    INSERT INTO stuff(name) VALUES
+        ('Kubernetes'),
+        ('Mercure'),
+        ('Vulcain'),
+        ('API Platform'),
+        ('FrankenPHP')
+    ;
