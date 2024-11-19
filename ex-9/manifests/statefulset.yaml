@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: k8s-training-postgres-statefulset
+  labels:
+    app: k8s-training-postgres
+spec:
+  serviceName: k8s-training-postgres-service # Utilisé pour générer le nom de domaine
+  selector:
+    matchLabels:
+      app: k8s-training-postgres # Même fonctionnement que les déploiements
+  template:
+    metadata:
+      labels:
+        app: k8s-training-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: bitnami/postgresql
+        env: # Exposer des variables d'environnement dans le conteneur
+          - name: POSTGRESQL_DATABASE # nom de la variable
+            valueFrom:
+              configMapKeyRef: # Depuis un configmap
+                name: k8s-training-config
+                key: postgres-database
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef: # Depuis un secret
+                name: k8s-training-secret
+                key: postgres-password
+        ports:
+        - name: tcp-postgresql
+          containerPort: 5432 # Port du conteneur à exposer
+        volumeMounts: # Volumes montés dans le conteneur
+        - name: data  # Notre volume persistant contenant les données de la base
+          mountPath: /bitnami/
+        - name: config-volume # Le fixtures, depuis le configmap
+          mountPath: /docker-entrypoint-initdb.d
+      volumes: # On crée un volume à partir du configmap
+      - name: config-volume # Nom du volume (doit matcher le nom dans <conteneur>.volumeMounts)
+        configMap:
+          name: k8s-training-config # Nom du configmap
+          items:
+          - key: postgres-fixtures.sql # Nom de la clef
+            path: postgres-fixtures.sql # Nom du fichier à exposer dans le conteneur
+  volumeClaimTemplates: # PVC à créer pour chaque pod
+  - metadata:
+      name: data  # Nom du volume (doit matcher le nom dans <conteneur>.volumeMounts)
+    spec: # Similaire à notre PVC de test
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi

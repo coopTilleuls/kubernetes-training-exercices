@@ -1,0 +1,56 @@
+apiVersion: apps/v1 # La version de l'API K8s utilisée
+kind: Deployment # Le type d'object décrit
+metadata: # Les noms et labels de notre object
+  name: k8s-training-deployment
+  labels:
+    app: k8s-training
+spec: # La définition du déploiement
+  replicas: 3 # Le nombre de pods souhaité (pour la scalabilité)
+  selector: # Comment doivent être matchés les pods à surveiller
+    matchLabels:
+      app: k8s-training
+  template: # Le template des objects Pod à créer
+    metadata:
+      labels:
+        app: k8s-training # Ici il faut que ça match avec le selector définit plus haut
+    spec:
+      containers:
+      - name: k8s-training
+        image: $DOCKER_USER/k8s-training:ex-9 # N'oubliez pas la version !
+        # ...
+        env:
+        - name: APP_ENV
+          value: PROD
+        - name: PGHOST
+          valueFrom:
+            configMapKeyRef:
+              name: k8s-training-config
+              key: postgres-host
+        - name: PGDATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: k8s-training-config
+              key: postgres-database
+        - name: PGUSER
+          valueFrom:
+            configMapKeyRef:
+              name: k8s-training-config
+              key: postgres-username
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef: # Depuis un secret
+              name: k8s-training-secret
+              key: postgres-password
+        resources:
+          limits:
+            cpu: 200m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          httpGet: # Requête HTTP GET
+            path: /list
+            port: 8000 # Sur le port 8000 du conteneur
+          initialDelaySeconds: 10 # On attend 10 secondes que ça démarre
+          periodSeconds: 10 # Puis on teste toutes les 10 secondes
