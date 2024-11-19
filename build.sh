@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -e
 
 if [ -z "$DOCKER_USER" ]; then
     echo missing DOCKER_USER
@@ -9,8 +9,7 @@ fi
 
 for TAG in ex-*; do
     test -f $TAG/image/Dockerfile \
-    && (
-        cd $TAG/image \
-        && docker build . -t $DOCKER_USER/k8s-training:$TAG --push
-    )
+    && cd $TAG/image \
+    && docker build . -t $DOCKER_USER/k8s-training:$TAG --push \
+    && cd -
 done

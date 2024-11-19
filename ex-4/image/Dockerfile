@@ -10,15 +10,15 @@ RUN apt-get update ; \
 WORKDIR /app
 COPY . .
 RUN --mount=from=composer,source=/usr/bin/composer,target=/usr/bin/composer \
-    echo '<?php return [];' > .env.local.php; \
-    composer install --prefer-dist --no-dev --no-scripts --no-progress; \
-    composer dump-autoload --classmap-authoritative --no-dev;
+    echo '<?php return [];' > .env.local.php \
+ && composer install --prefer-dist --no-dev --no-scripts --no-progress \
+ && composer dump-autoload --classmap-authoritative --no-dev
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 
 FROM php_prod AS php_dev
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash ; \
-    apt-get install -y symfony-cli; \
-    mkdir var/ && chmod 777 var;
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+ && apt-get install -y symfony-cli \
+ && mkdir var/ && chmod 777 var
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 CMD ["symfony", "server:start", "--allow-all-ip"]
