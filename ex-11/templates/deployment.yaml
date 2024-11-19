@@ -15,7 +15,7 @@ spec: # La définition du déploiement
         app: {{ .Release.Name }} # Ici il faut que ça match avec le selector définit plus haut
     spec:
       containers:
-      - name: {{ .Release.Name }}
+      - name: k8s-training
         image: {{ .Values.app.image }}:{{ .Values.app.tag }} # N'oubliez pas la version !
         # ...
         env:
