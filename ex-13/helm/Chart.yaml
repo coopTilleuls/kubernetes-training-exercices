@@ -1,0 +1,10 @@
+apiVersion: v1
+name: mon-app
+description: 
+type: application
+version: 0.0.1
+dependencies:
+  - name: postgresql
+    version: 12.1.6 
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

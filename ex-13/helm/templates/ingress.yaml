@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  labels:
+    app: k8s-training
+  annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Release.Name }}.{{ .Values.ingress.dns_suffix }} # k8s-training.quentin.local
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix # Match toutes les URLs qui commencent par "/"
+            # Alternative : "Exact" pour matcher uniquement l'URL exacte
+            backend:
+              service:
+                name: {{ .Release.Name }}-service # Nom du service à exposer
+                port:
+                  number: 8000 # Port du service
+  tls:
+  - hosts:
+      - {{ .Release.Name }}.{{ .Values.ingress.dns_suffix }} # Nom de domaine
+    secretName: k8s-training-ingress-tls

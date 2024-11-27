@@ -1,0 +1,28 @@
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      auth:
+        username: "postgres"
+        database: "k8s-training"
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+    initdb:
+      scriptsConfigMap: "k8s-training-config"
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+app:
+  image: jfcoz/k8s-training
+  tag: ex-13
+  replicas: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+
+ingress:
+  dns_suffix: test.ex
